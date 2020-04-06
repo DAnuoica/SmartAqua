@@ -1,3 +1,11 @@
+////////////////////////////////////////
+#include <OneWire.h>                  //
+#include <DallasTemperature.h>        //
+#define ONE_WIRE_BUS 13               // Temp Module
+OneWire oneWire(ONE_WIRE_BUS);        //
+DallasTemperature sensors(&oneWire);  //
+////////////////////////////////////////
+
 #include <FirebaseArduino.h>
 #include <ESP8266WiFi.h>
 
@@ -8,6 +16,8 @@
 #define PinOxi 5
 #define PinFeed 4
 #define PinLED 13
+
+bool keyTemp = false;
 
 void initData() {
     Firebase.setInt("Mode", 0); // chua set mode
@@ -23,6 +33,7 @@ pinMode(PinOxi, OUTPUT);
 pinMode(PinFeed, OUTPUT);
 pinMode(PinLED, OUTPUT);
 
+sensors.begin(); // temp module
 
 // connect to wifi.
 WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -47,74 +58,42 @@ void loop() {
   int Mode = object.getInt("Mode");
   while(Mode == 1) //che do manual
   {   
-    if (Firebase.available()) {
-    FirebaseObject event = Firebase.readEvent();
-    String eventType = event.getString("type");
-    eventType.toLowerCase();
-    
-    Serial.print("event: ");
-    Serial.println(eventType);
-    if (eventType == "put") {
-    Serial.print("data: ");
-    Serial.println(event.getString("data"));
-    String path = event.getString("path");
-    String data = event.getString("data");
+    catchEvent(Mode);
+  if(keyTemp == true)//vao lan sau
+        {
+          FirebaseObject object = Firebase.get(path);
+          int fbTemp  = object.getInt("Temp");
+          int currentTemp = getCurrentTemp();
+          delay(1000);
+          Serial.println("Vao che do thay doi nhiet do");
+          Serial.print("Nhiet do hien tai cua ho ca:");
+          delay(500);
+          Serial.println(currentTemp);
+          delay(500);
+          Serial.print("Nhiet do tren Firebase: ");
+          delay(500);
+          Serial.println(fbTemp);
+          delay(500);
+          //kiem tra neu currentTemp = fbTemp thi keyTemp = false
+          if(currentTemp == fbTemp) 
+          {
+            keyTemp = false;
+            // Dong thoi tat so nong lanh
+            Serial.println("Tat so nong lanh...");
+          } else { Serial.println("Chua tat so");}
+          delay(1000);
+        }
+  }
 
-    if (path == "/")
-    {
-    JsonVariant payload = event.getJsonVariant("data");
-    Serial.print("data: ");
-  //  bool checkMode = payload["Mode"];
-    bool checkOxi = payload["Oxi"];
-    bool checkFeed = payload["Feed"];
-    bool checkLED = payload["LED"];
-    
-    digitalWrite(PinMode, false);
-    digitalWrite(PinOxi, checkOxi);
-    digitalWrite(PinFeed, checkFeed);
-    digitalWrite(PinLED, checkLED);
-    payload.printTo(Serial);
-    }
-/////////////////// Dieu khien OXI
-    if (path == "/Oxi")
-    {   
-    bool payload = event.getBool("data");
-    digitalWrite(PinOxi, payload);
-    Serial.print("data Oxi: ");
-    Serial.println(payload);
-    }
-    /////////////////// Dieu khien FEED
-    if (path == "/Feed")
-    {
-    bool payload = event.getBool("data");
-    digitalWrite(PinFeed, payload);
-    Serial.print("data Feed: ");
-    Serial.println(payload);
-    }
-/////////////////// Dieu khien LED
-    if (path == "/LED")
-    {
-    bool payload = event.getBool("data");
-    digitalWrite(PinLED, payload);
-    Serial.print("data LED: ");
-    Serial.println(payload);
-    }
+
+
   
-    if (path == "/Mode")
-    {
-      Mode = event.getInt("data");
-      digitalWrite(PinMode, true);
-      break;
-    }
-  }
-    }
-  
-  }
   while(Mode == 2) //che do auto 
   {
+    Serial.println("Che do Auto");
     String path = "/Hoca";
     FirebaseObject object = Firebase.get(path);
-    int Mode = object.getInt("Mode");
+    //Mode = object.getInt("Mode");
     if (Firebase.available()) {
     FirebaseObject event = Firebase.readEvent();
     String eventType = event.getString("type");
