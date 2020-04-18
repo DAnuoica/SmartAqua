@@ -4,12 +4,17 @@
 #define ONE_WIRE_BUS 13               // Temp Module
 OneWire oneWire(ONE_WIRE_BUS);        //
 DallasTemperature sensors(&oneWire);  //
-////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////////
+#include <Wire.h>                                                                 //
+#include <LiquidCrystal_I2C.h>                                                    //
+#include "RTClib.h"                                                               // Time Module
+RTC_DS1307 rtc;                                                                   //    
+char daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};    //
+////////////////////////////////////////////////////////////////////////////////////
 #include <FirebaseArduino.h>
 #include <ESP8266WiFi.h>
 
-  #define WIFI_SSID "     "   //Thay wifi và mật khẩu
+  #define WIFI_SSID "     " 
   #define WIFI_PASSWORD "tamthang"
 
 #define PinMode 16
@@ -34,6 +39,7 @@ pinMode(PinFeed, OUTPUT);
 pinMode(PinLED, OUTPUT);
 
 sensors.begin(); // temp module
+setupTimeModule(); // Time Module
 
 // connect to wifi.
 WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -46,7 +52,7 @@ Serial.println();
 Serial.print("connected: ");
 Serial.println(WiFi.localIP());
 
-Firebase.begin("arduinotest-7d858.firebaseio.com"); // thay bằng địa chỉ ứng dụng của bạn
+Firebase.begin("arduinotest-7d858.firebaseio.com");
 //initData();
 Firebase.stream("/Hoca"); 
 }
@@ -91,7 +97,28 @@ void loop() {
       Mode = event.getInt("data");
       break;
     }
+    if (path =="/Confirm")
+    {
+      
     }
     }
+    }
+
+    //xu li auto
   }
+
+  //pushing DATA
+  if(trueTime()==true) {
+    String pathPush = "Hoca/logs/";
+    pathPush+=getTime();
+    Serial.println(pathPush);
+    Firebase.setInt(pathPush, getCurrentTemp());
+  // handle error
+  if (Firebase.failed()) {
+      Serial.print("setting /number failed:");
+      Serial.println(Firebase.error());  
+//      return;
+  }
+    }
+  
 }
