@@ -7,44 +7,49 @@
             SCL               SCL
 */
 
-void setupTimeModule(){
- Serial.begin(9600);
- if (! rtc.begin())
- {
-   Serial.print("Couldn't find RTC");
-   while (1);
- }
-
-  if (! rtc.isrunning())
- {
-   Serial.print("RTC is NOT running!");
-   Serial.println();
- }
-   rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-   //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-}
 bool trueTime() {
-  DateTime now = rtc.now();
-  if(now.hour()%2==0 && now.minute()==0 && now.second()==0) {
-    delay(1000);
-      return true;
-      }
+  strDateTime dateTime;
+  dateTime = NTPch.getNTPtime(7.0, 0);
+  if(dateTime.valid){
+    if(dateTime.second %10 ==0) return true;
+    }
   return false;
   
   }
-String getTime(){
-  DateTime now = rtc.now();
-  String currentTime="";
-  //currentTime+=daysOfTheWeek[now.dayOfTheWeek()];
-  currentTime+=now.day();
-  currentTime+="/";
-  currentTime+=now.month();
-  currentTime+="-";
-  currentTime+=now.hour();
-  currentTime+=":";
-  currentTime+=now.minute();
-  currentTime+=":";
-  currentTime+=now.second();
-  return currentTime;
-  
+void getTime(int i){
+  Serial.println(i);
+  dateTime = NTPch.getNTPtime(7.0, 0);
+    if(dateTime.valid){
+        Serial.println("inside");
+        NTPch.printDateTime(dateTime);
+
+        byte actualHour = dateTime.hour;
+        byte actualMinute = dateTime.minute;
+        byte actualsecond = dateTime.second;
+        int actualyear = dateTime.year;
+        byte actualMonth = dateTime.month;
+        byte actualday =dateTime.day;
+        byte actualdayofWeek = dateTime.dayofWeek;
+        }
+        else 
+        {
+          delay(1000);
+          getTime(i++);
+        }
+      delay(1000);
   }
+
+//  if(dateTime.valid){
+//    Serial.println("OK thoi gian");
+//  String currentTime="";
+//  currentTime+=dateTime.day;
+//  currentTime+="/";
+//  currentTime+=dateTime.month;
+//  currentTime+="-";
+//  currentTime+=dateTime.hour;
+//  currentTime+=":";
+//  currentTime+=dateTime.minute;
+//  currentTime+=":";
+//  currentTime+=dateTime.second;
+//  return currentTime;  
+//  } else Serial.println("Loi thoi gian");
