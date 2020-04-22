@@ -1,3 +1,7 @@
+#include <FirebaseArduino.h>          //
+#include <ESP8266WiFi.h>              //
+#define WIFI_SSID "     _plus"        //
+#define WIFI_PASSWORD "tamthang"      //
 ////////////////////////////////////////
 #include <OneWire.h>                  //
 #include <DallasTemperature.h>        //
@@ -7,28 +11,23 @@ DallasTemperature sensors(&oneWire);  //
 ////////////////////////////////////////////////////////////////////////////////////
 #include <Wire.h>                                                                 //
 #include <LiquidCrystal_I2C.h>                                                    //
-#include "RTClib.h"                                                               // Time Module
+#include "RTClib.h"                                                               // DS1307
 RTC_DS1307 rtc;                                                                   //    
 char daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};    //
-////////////////////////////////////////////////////////////////////////////////////
-#include <FirebaseArduino.h>
-#include <ESP8266WiFi.h>
-
-
-#include <NTPtimeESP.h>
-#define DEBUG_ON
-
-  #define WIFI_SSID "     _plus" 
-  #define WIFI_PASSWORD "tamthang"
+//////////////////////////////////////////////////////////////////////////////////////
+#include <NTPtimeESP.h>             //
+#define DEBUG_ON                    //
+NTPtime NTPch("ch.pool.ntp.org");   //Time Module
+strDateTime dateTime;               //     
+//////////////////////////////////////
 
 #define PinMode 16
 #define PinOxi 5
 #define PinFeed 4
 #define PinLED 13
-
-NTPtime NTPch("ch.pool.ntp.org");
-strDateTime dateTime;
 bool keyTemp = false;
+bool keyTime = false;
+byte beforeMinute=60;
 
 void initData() {
     Firebase.setInt("Mode", 0); // chua set mode
@@ -46,10 +45,8 @@ pinMode(PinLED, OUTPUT);
 
 sensors.begin(); // temp module
 //setupTimeModule(); // Time Module
-
 // connect to wifi.
 WiFi.mode(WIFI_STA);
-
 WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 Serial.print("connecting");
 while (WiFi.status() != WL_CONNECTED) {
@@ -59,20 +56,18 @@ delay(500);
 Serial.println();
 Serial.print("connected: ");
 Serial.println(WiFi.localIP());
- 
 Firebase.begin("arduinotest-7d858.firebaseio.com");
 //initData();
 Firebase.stream("/Hoca"); 
 }
 
-
 void loop() {
-  getTime(1);
   String path = "/Hoca";
   FirebaseObject object = Firebase.get(path);
   int Mode = object.getInt("Mode");
   while(Mode == 1) //che do manual
-  {   
+  { 
+    pushData();
     catchEvent(Mode);
     stopWarmerCooler(keyTemp);
   }
@@ -116,19 +111,6 @@ void loop() {
     //xu li auto
   }
 
-  //pushing DATA
-//  if(trueTime()==true) {
-//    String pathPush = "Hoca/logs/";
-//    //pathPush+=getTime();
-//    Serial.println(pathPush);
-//  //  Firebase.setInt(pathPush, getCurrentTemp());
-//    Firebase.setInt(pathPush, 28);
-//  // handle error
-//  if (Firebase.failed()) {
-//      Serial.print("setting /number failed:");
-//      Serial.println(Firebase.error());  
-////      return;
-//  }
-//    }
+ 
   
 }

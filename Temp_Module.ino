@@ -1,10 +1,7 @@
 /*
- * Kết nối:
- *     red       VCC  ---- 5V (Arduino)
- *     black     GND  ---- GND (Arduino)
- *     yellow    DATA ----  2  (Arduino)  16 (wemos)
- *    
- *    more details: circuit ds18b20
+      red       VCC  ---- 5V (Arduino)
+      black     GND  ---- GND (Arduino)
+      yellow    DATA ----  2  (Arduino)  16 (wemos)    
  */
  
 int getCurrentTemp() 
