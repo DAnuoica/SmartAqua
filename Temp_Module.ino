@@ -34,6 +34,7 @@ void stopWarmerCooler (bool &keyTemp)
     {
       keyTemp = false;
       // Dong thoi tat so nong lanh
+      digitalWrite(PinRelay1, LOW); 
       Serial.println("Tat so nong lanh...");
     } else { Serial.println("Chua tat so");}
     delay(1000);

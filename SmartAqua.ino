@@ -1,7 +1,7 @@
 #include <FirebaseArduino.h>          //
 #include <ESP8266WiFi.h>              //
-#define WIFI_SSID "     _plus"        //
-#define WIFI_PASSWORD "tamthang"      //
+#define WIFI_SSID "Quang Long"        //
+#define WIFI_PASSWORD "quanglong123"      //
 ////////////////////////////////////////
 #include <OneWire.h>                  //
 #include <DallasTemperature.h>        //
@@ -20,11 +20,14 @@ char daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};  
 NTPtime NTPch("ch.pool.ntp.org");   //Time Module
 strDateTime dateTime;               //     
 //////////////////////////////////////
+#include <BH1750.h>
+BH1750 lightMeter;
 
 #define PinMode 16
 #define PinOxi 5
 #define PinFeed 4
 #define PinLED 13
+#define PinRelay1 12
 bool keyTemp = false;
 bool keyTime = false;
 byte beforeMinute=60;
@@ -42,9 +45,12 @@ pinMode(PinMode, OUTPUT);
 pinMode(PinOxi, OUTPUT);
 pinMode(PinFeed, OUTPUT);
 pinMode(PinLED, OUTPUT);
+pinMode(PinRelay1, OUTPUT);
 
 sensors.begin(); // temp module
 //setupTimeModule(); // Time Module
+Wire.begin(D4, D3); //
+lightMeter.begin(); // Light Module
 // connect to wifi.
 WiFi.mode(WIFI_STA);
 WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -62,6 +68,7 @@ Firebase.stream("/Hoca");
 }
 
 void loop() {
+  Serial.println(getCurrentTemp());
   String path = "/Hoca";
   FirebaseObject object = Firebase.get(path);
   int Mode = object.getInt("Mode");

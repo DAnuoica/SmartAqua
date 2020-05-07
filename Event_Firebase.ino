@@ -60,7 +60,7 @@ if (Firebase.available()) {
     }
      if (path == "/Temp") 
     {
-      delay(3000);
+      delay(1000);
       Serial.println("Vao che do tu chinh nhiet do");
       int fbTemp  = event.getInt("data");
       int currentTemp = getCurrentTemp();
@@ -70,7 +70,8 @@ if (Firebase.available()) {
       delay(2000); //vao lan dau
         if(currentTemp > fbTemp) 
         {
-          //giam nhiet do  
+          //giam nhiet do 
+          digitalWrite(PinRelay1, HIGH); 
           Serial.println("Hay giam nhiet do");
         };
         if(currentTemp < fbTemp) 
