@@ -15,28 +15,32 @@ void stopWarmerCooler (bool &keyTemp)
 {
    if(keyTemp == true)//vao lan sau
   {
-    String path = "/Hoca";
-    FirebaseObject object = Firebase.get(path);
-    int fbTemp  = object.getInt("Temp");
+//    String path = "/HoCa";
+//    FirebaseObject object = Firebase.get(path);
+//    int fbTemp  = object.getInt("Temp");
+//    int fbTemp = Firebase.getInt("HoCa/Temp");
+    int fbTemp = Firebase.getInt("HoCa/Request");
     int currentTemp = getCurrentTemp();
-    delay(1000);
+ //   delay(100);
     Serial.println("Vao che do thay doi nhiet do");
     Serial.print("Nhiet do hien tai cua ho ca:");
-    delay(500);
+  //  delay(100);
     Serial.println(currentTemp);
-    delay(500);
+   // delay(100);
     Serial.print("Nhiet do tren Firebase: ");
-    delay(500);
+    //delay(100);
     Serial.println(fbTemp);
-    delay(500);
+    //delay(100);
+    
     //kiem tra neu currentTemp = fbTemp thi keyTemp = false
     if(currentTemp == fbTemp) 
     {
       keyTemp = false;
       // Dong thoi tat so nong lanh
-      digitalWrite(PinRelay1, LOW); 
+      pcf8574.digitalWrite(PinCooler, true); 
       Serial.println("Tat so nong lanh...");
     } else { Serial.println("Chua tat so");}
-    delay(1000);
+    delay(50);
   }
+  delay(100);
 }

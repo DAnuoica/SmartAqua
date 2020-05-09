@@ -10,7 +10,7 @@ bool trueTime(byte &beforeMinute) {
 //  strDateTime dateTime;
   dateTime = NTPch.getNTPtime(7.0, 0);
   if(dateTime.valid){
-    if(dateTime.minute != beforeMinute && dateTime.minute %1 == 0)
+    if(dateTime.minute != beforeMinute && dateTime.minute %2 == 0)
     {
       beforeMinute = dateTime.minute;
       Serial.println("True Time");

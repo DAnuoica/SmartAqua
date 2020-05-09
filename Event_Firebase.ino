@@ -1,4 +1,4 @@
-void catchEvent(int &Mode) {
+void catchEvent() {
 if (Firebase.available()) {
     FirebaseObject event = Firebase.readEvent();
     String eventType = event.getString("type");
@@ -21,9 +21,9 @@ if (Firebase.available()) {
     bool checkFeed = payload["Feed"];
     bool checkLED = payload["LED"];
     
-    digitalWrite(PinMode, false);
+//    digitalWrite(PinMode, false);
     digitalWrite(PinOxi, checkOxi);
-    digitalWrite(PinFeed, checkFeed);
+//    digitalWrite(PinFeed, checkFeed);
     digitalWrite(PinLED, checkLED);
     payload.printTo(Serial);
     }
@@ -39,7 +39,8 @@ if (Firebase.available()) {
     if (path == "/Feed")
     {
     bool payload = event.getBool("data");
-    digitalWrite(PinFeed, payload);
+    controlFeed(payload);
+//    digitalWrite(PinFeed, payload);
     Serial.print("data Feed: ");
     Serial.println(payload);
     }
@@ -52,26 +53,26 @@ if (Firebase.available()) {
     Serial.println(payload);
     }
   
-    if (path == "/Mode")
+//    if (path == "/Mode")
+//    {
+//      Mode = event.getInt("data");
+////      digitalWrite(PinMode, true);
+////      break;
+//    }
+     if (path == "/Request") 
     {
-      Mode = event.getInt("data");
-      digitalWrite(PinMode, true);
-//      break;
-    }
-     if (path == "/Temp") 
-    {
-      delay(1000);
+//      delay(1000);
       Serial.println("Vao che do tu chinh nhiet do");
       int fbTemp  = event.getInt("data");
       int currentTemp = getCurrentTemp();
-      delay(2000);
+//      delay(2000);
        Serial.print("Nhiet do hien tai cua ho ca:");
        Serial.println(currentTemp);
-      delay(2000); //vao lan dau
+      delay(100); //vao lan dau
         if(currentTemp > fbTemp) 
         {
           //giam nhiet do 
-          digitalWrite(PinRelay1, HIGH); 
+          pcf8574.digitalWrite(PinCooler, false); 
           Serial.println("Hay giam nhiet do");
         };
         if(currentTemp < fbTemp) 

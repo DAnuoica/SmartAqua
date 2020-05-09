@@ -2,7 +2,7 @@
 void pushData(){
     
     if(trueTime(beforeMinute)) {
-    String pathPush = "Hoca/logs/";
+    String pathPush = "HoCa/logs/";
     pathPush+=getTime();
     String pathTemp = pathPush + "/Temp";
     String pathLight = pathPush + "/Light";
@@ -15,6 +15,7 @@ void pushData(){
 //      return;
   }
     }
+    delay(100);
   }
 
   
