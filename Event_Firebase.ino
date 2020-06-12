@@ -1,5 +1,5 @@
 void catchEvent() {
-if (Firebase.available()) {
+  if (Firebase.available()) {
     FirebaseObject event = Firebase.readEvent();
     String eventType = event.getString("type");
     eventType.toLowerCase();
@@ -11,69 +11,56 @@ if (Firebase.available()) {
     Serial.println(event.getString("data"));
     String path = event.getString("path");
     String data = event.getString("data");
-
-    if (path == "/")
-    {
-    JsonVariant payload = event.getJsonVariant("data");
-    Serial.print("data: ");
-  //  bool checkMode = payload["Mode"];
-    bool checkOxi = payload["Oxi"];
-    bool checkFeed = payload["Feed"];
-    bool checkLED = payload["LED"];
-    
-//    digitalWrite(PinMode, false);
-    digitalWrite(PinOxi, checkOxi);
-//    digitalWrite(PinFeed, checkFeed);
-    digitalWrite(PinLED, checkLED);
-    payload.printTo(Serial);
-    }
 /////////////////// Dieu khien OXI
-    if (path == "/Oxi")
+    if (path == "/Oxi/value")
     {   
     bool payload = event.getBool("data");
+    switchOxi(payload);
     digitalWrite(PinOxi, payload);
     Serial.print("data Oxi: ");
     Serial.println(payload);
     }
-    /////////////////// Dieu khien FEED
-    if (path == "/Feed")
-    {
+    if (path == "/Schedule")
+    {   
     bool payload = event.getBool("data");
-    controlFeed(payload);
-//    digitalWrite(PinFeed, payload);
-    Serial.print("data Feed: ");
-    Serial.println(payload);
+    if(payload) setSchedule(payload);
+    }
+    /////////////////// Dieu khien FEED
+    if (path == "/Feed/value")
+    {
+       bool payload = event.getBool("data");
+       switchFeed(payload);
     }
 /////////////////// Dieu khien LED
-    if (path == "/LED")
+    if (path == "/Led/value")
     {
     bool payload = event.getBool("data");
-    digitalWrite(PinLED, payload);
-    Serial.print("data LED: ");
-    Serial.println(payload);
+    Serial.println("Thay doi LED");
+    switchLed(payload);
+    
+   // pcf8574.digitalWrite(PinLED, payload);
     }
-  
-//    if (path == "/Mode")
-//    {
-//      Mode = event.getInt("data");
-////      digitalWrite(PinMode, true);
-////      break;
-//    }
-     if (path == "/Request") 
+    if (path == "/Purifier/value")
     {
-//      delay(1000);
+    bool payload = event.getBool("data");
+    Serial.println("Thay doi may bom");
+    switchLed(payload);
+    
+    
+    if (path == "/Request") 
+    {
       Serial.println("Vao che do tu chinh nhiet do");
       int fbTemp  = event.getInt("data");
       int currentTemp = getCurrentTemp();
-//      delay(2000);
        Serial.print("Nhiet do hien tai cua ho ca:");
        Serial.println(currentTemp);
-      delay(100); //vao lan dau
         if(currentTemp > fbTemp) 
         {
           //giam nhiet do 
-          pcf8574.digitalWrite(PinCooler, false); 
-          Serial.println("Hay giam nhiet do");
+          switchPurifier(true);
+          switchCooler(true);
+         // pcf8574.digitalWrite(PinCooler, false); 
+         // Serial.println("Hay giam nhiet do");
         };
         if(currentTemp < fbTemp) 
         {
@@ -83,5 +70,5 @@ if (Firebase.available()) {
         keyTemp = true;
       }
   }
-    }
+}
 }

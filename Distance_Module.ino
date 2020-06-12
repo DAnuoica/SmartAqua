@@ -9,16 +9,11 @@
    Nạp code mở Serial Monitor chọn No line ending, baud 9600.
    */
 void notiFeed() {
-  Serial.println("Thong bao thuc an");
-  delay(100);
-  if(getDistance() > 8 ) Serial.println("Het thuc an");
-  else Serial.println("Khong tinh toan duoc khoang cach");
-  delay(200);
+  if(getDistance() >8) {
+  Serial.println("Het thuc an");
+  delay(50);
   }
-//bool outOfFeed(){
-//  if(getDistance() > 8) return true;
-//  else return false; 
-//  }
+}
 int getDistance()
 {
     unsigned long duration; // biến đo thời gian
@@ -38,5 +33,4 @@ int getDistance()
  //   Serial.print(distance);
  //   Serial.println("cm");
     return distance;
-//    delay(100);
 }
