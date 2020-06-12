@@ -7,40 +7,37 @@
 int getCurrentTemp() 
 { 
  sensors.requestTemperatures();
- Serial.println(sensors.getTempCByIndex(0));
+// Serial.println(sensors.getTempCByIndex(0));
+  delay(50);
  return round (sensors.getTempCByIndex(0));
 } 
 
-void stopWarmerCooler (bool &keyTemp)
+void stopWarmerCooler ()
 {
-   if(keyTemp == true)//vao lan sau
-  {
-//    String path = "/HoCa";
-//    FirebaseObject object = Firebase.get(path);
-//    int fbTemp  = object.getInt("Temp");
-//    int fbTemp = Firebase.getInt("HoCa/Temp");
-    int fbTemp = Firebase.getInt("HoCa/Request");
+    int requestTemp = Firebase.getInt("HoCa/Request");
     int currentTemp = getCurrentTemp();
- //   delay(100);
     Serial.println("Vao che do thay doi nhiet do");
     Serial.print("Nhiet do hien tai cua ho ca:");
-  //  delay(100);
     Serial.println(currentTemp);
-   // delay(100);
     Serial.print("Nhiet do tren Firebase: ");
-    //delay(100);
-    Serial.println(fbTemp);
-    //delay(100);
-    
+    Serial.println(requestTemp);
     //kiem tra neu currentTemp = fbTemp thi keyTemp = false
-    if(currentTemp == fbTemp) 
+    if(currentTemp == requestTemp) 
     {
       keyTemp = false;
-      // Dong thoi tat so nong lanh
-      pcf8574.digitalWrite(PinCooler, true); 
+      switchCooler(false);
+      switchWarmer(false);
       Serial.println("Tat so nong lanh...");
-    } else { Serial.println("Chua tat so");}
+    }
+    else if(currentTemp < requestTemp) {
+      Serial.println("Nguoi dung yeu cau tang nhiet do");
+      switchCooler(false); // Firstly, switch off the Cooler
+      switchWarmer(true); // Switch on the Warmer
+      }
+    else if (currentTemp > requestTemp) {
+      Serial.println("Nguoi dung yeu cau giam nhiet do");
+      switchCooler(true); // Firstly, switch off the Cooler
+      switchWarmer(false); // Switch on the Warmer
+      }
     delay(50);
-  }
-  delay(100);
 }
