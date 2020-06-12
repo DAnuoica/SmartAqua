@@ -125,7 +125,7 @@ void loop() {
   
    Timer::getInstance()->update();
   batsukien->update();
-  //dieukhiennonglanh->update();
+  dieukhiennonglanh->update();
   baothucan->update();
   guidulieu->update();
   hengio->update();
