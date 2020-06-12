@@ -3,7 +3,12 @@
 #include "Timer.h"
 #include "WorkScheduler.h"
 
+<<<<<<< HEAD
 WorkScheduler::WorkScheduler(int workPin, unsigned long times, void (*func)(int)) {
+=======
+WorkScheduler::WorkScheduler(int workPin, unsigned long times, void (*func)(int))
+{
+>>>>>>> c0b460c1c799114d64f17a9e218ee143fea66a8a
 	_workPin = workPin;
 	_workTime = times;
 	_ellapsedTime = 0;
